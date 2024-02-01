@@ -14,7 +14,7 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
 # importamos funciones utiles
-source("Codigos/Dagar/Implementacion/funciones_dagar.R")
+source("funciones_dagar.R")
 
 # elegimos una semilla tal que se compruebe que la matriz sea DAG
 semilla <- choose_seed(n = 60, p = 0.034, N = 1000000)
@@ -33,6 +33,7 @@ M_adj <- as_adjacency_matrix(grafo) |> as.matrix()
 W <- M_adj + t(M_adj)
 W[W != 0] <- 1
 
+# contamos la cantidad de vecinos
 apply(W, MARGIN = 2, sum)
 
 # Funcion que transforma la matriz
@@ -50,20 +51,22 @@ pesos_matriz <- function(W){
 
 Wt <- pesos_matriz(W)
 
-# Definimos rho y t_u
+# Definimos rho, sigma_e y sigma_u
 rho <- 0.1
 sigma_u <- 1
 sigma_e <- sqrt(10)
 
+# definimos el tamaño de la matriz
 n <- 60
 
+# matriz de varianzas covarianzas de los efectos aleatorios
 W1 <- diag(as.numeric(W %*% matrix(rep(1, ncol(W)))), ncol = ncol(W), nrow = ncol(W))
 # obtenemos la matriz de precision
 S <- (1/sigma_u)^2 * (W1 - rho * W)
 
 
-
-# simulamos los valores z1 y z2 de una distribucion Normal(0, 1)
+# simulamos los valores z1 y z2 de una distribucion Normal(0, 1) que corresponden a los
+# "datos" del modelo
 z1 <- rnorm(n)
 z2 <- rnorm(n)
 
@@ -72,6 +75,7 @@ beta_0 <- 4
 beta_1 <- 2
 beta_2 <- -1
 
+# codigo del modelo en STAN
 modelo_stan <- "
 data{
   int N;
@@ -122,9 +126,7 @@ model{
 }
 "
 
-options(mc.cores = parallel::detectCores())
-rstan_options(auto_write = TRUE)
-
+# creamos matrices para guardar los resultados
 filas <- 3750
 matriz_beta0 <- matrix(ncol = 10, nrow = filas)
 matriz_beta1 <- matrix(ncol = 10, nrow = filas)
@@ -139,12 +141,14 @@ rownames(matriz_covergencia) <- c("b0", "b1", "b2", "sigma_e", "tu", "rho",
 
 # Ciclo for ---------------------------------------------------------------
 
-
+# fijamos la semilla
 set.seed(semilla)
 
+# simulamos el efecto aleatorio
 u <- mvtnorm::rmvnorm(1, mean = rep(0, n), sigma = solve(S))
 
-#u <- readRDS(file = "Codigos/CAR/Resultados/Resultados_50/u.rds")
+# tambien se puede guardar en un archivo RDS
+#u <- readRDS(file = "Normal_CAR/efecto_aleatorio.rds")
 
 
 for(i in 1:10){
@@ -154,6 +158,7 @@ for(i in 1:10){
               mean = beta_0 + beta_1 * z1 + beta_2 * z2 + u,
               sd = sigma_e)
   
+  # creamos una lista con los datos necesarios para el modelo en stan
   datos <- list(N = length(y1),
                 y = y1,
                 z1 = z1,
@@ -161,21 +166,25 @@ for(i in 1:10){
                 W = W,
                 dWI = W1)
   
+  # ejecutamos el modelo
   mod <- stan(model_code = modelo_stan,
               data = datos,
-              chains = 3,
-              iter = 8000,
-              thin = 2,
+              chains = 3, # tres cadenas
+              iter = 8000, # 8000 iteraciones
+              thin = 2, # thining 2
+              # parametros a retornar
               pars = c("b0", "b1", "b2", "sigma_e", "sigma_u", "rho"))
   
+  # resumen del modelo
   a <- summary(mod)
   
+  # guardamos la convergencia
   convergencia <- a$summary[,10]
   
+  # extraemos las cadenas del modelo
   cadena <- rstan::extract(mod)
   
-  cadena$sigma_e |> acf()
-  
+  # guardamos los resultados de cada resultado
   matriz_beta0[,i] <- cadena$b0
   matriz_beta1[,i] <- cadena$b1
   matriz_beta2[,i] <- cadena$b2

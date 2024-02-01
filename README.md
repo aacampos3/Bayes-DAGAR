@@ -1,5 +1,7 @@
 # Bayes-DAGAR
 
+Este repositorio contiene el código para implementar un estudio de simulación de modelos espaciales bajo el paradigma bayesiano. Estos modelos 
+
 ## Ruta :file_folder:
 
 El repositorio contiene las siguiente ruta:
@@ -14,3 +16,4 @@ El repositorio contiene las siguiente ruta:
     * `normal_dagar.stan`
     * `random_dagar_normal.R`
     * `random_norma_dagar.stan`
+
