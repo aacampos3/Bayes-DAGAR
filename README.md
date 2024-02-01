@@ -6,6 +6,8 @@ Este repositorio contiene el código para implementar un estudio de simulación 
 
 El repositorio contiene las siguiente ruta:
 
+* `funciones_dagar.R`: Contiene funciones auxiliares para la implementación de los modelos CAR y DAGAR.
+
 * Normal_CAR: Contiene los archivos para simular datos utilizando un esquema CAR.
     * `car_normal.R`
 
@@ -16,4 +18,8 @@ El repositorio contiene las siguiente ruta:
     * `normal_dagar.stan`
     * `random_dagar_normal.R`
     * `random_norma_dagar.stan`
+
+## Referencias
+
+
 

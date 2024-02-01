@@ -109,9 +109,9 @@ data {
   // int <lower=0, upper=1> conexion[N_edges];
   int M[N,N];
 
-  real y[N];
-  real z1[N];
-  real z2[N];
+  real y[N]; // datos
+  real z1[N]; // covariables
+  real z2[N]; // covariabñes
 }
 
 transformed data{
@@ -122,22 +122,22 @@ transformed data{
 }
 
 parameters {
-  real <lower=0, upper=1> rho; // Spatial correlation parameter
-  real <lower=0> sigma2_u; // Precision of the spatial effects
-  real <lower=0> sigma2_e; // Error general
+  real <lower=0, upper=1> rho; // Parametro de correlacion espacial
+  real <lower=0> sigma2_u; // Varianza del efecto espacial
+  real <lower=0> sigma2_e; // Varianza del modelo (marginal)
   //real <lower=0> tau; // Precision of the spatial effects
-  vector[N] w; // Spatial Random Effect
-  real beta0; // intercept
-  real beta1;
-  real beta2;
-  real <lower=0, upper=1> prob;
+  vector[N] w; // Efecto aleatorio espacial
+  real beta0; // Intercepto
+  real beta1; // Covariable 1
+  real beta2; // Covariable 2
+  real <lower=0, upper=1> prob; // distribucion a priori de probabilidad
 }
 
 model {
-  vector[N] b; //
-  vector[N] vec_var; //
-  vector[N] t_rowsum; // only the rowsum of t is used
-  vector[N] std_dev; // Rescaled std_dev by std_dev_w
+  vector[N] b; // auxiliar (sirve para realizar calculos)
+  vector[N] vec_var; // vector de varianzas del efecto aleatorio
+  vector[N] t_rowsum; // suma de filas
+  vector[N] std_dev; // varianza del vectoir aleatorio escalada
   
   // definimos la versomilitud de la matriz de adyacencia, es decir,
   // agregamops incertidumbre a las conexiones vistas
@@ -171,7 +171,7 @@ model {
   vec_var = (1 - rho * rho) ./ (1 + (N_nei - rep_vector(1,N)) * rho * rho);
   b = rho ./ (1 + (N_nei - rep_vector(1,N)) * rho * rho );
 
-  // Linear in number of edges
+  // suma de las filas
   t_rowsum[1] = 0;
   for(i in 2:N){
     t_rowsum[i] = sum(w[nei[(adjacency_ends[i-1] + 1):adjacency_ends[i]]]) * b[i];
@@ -194,5 +194,3 @@ model {
   sigma2_e ~ inv_gamma(0.01, 0.01);
   prob ~ beta(1,1);
 }
-
-// linea en blanco;

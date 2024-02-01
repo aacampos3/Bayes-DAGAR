@@ -35,12 +35,15 @@ M[M != 0] <- 1
 
 # simulamos los datos
 set.seed(1234)
+
 # cantidad de regiones
 N <- nrow(M)
 
+# simulamos las covariables desde una distribución Normal(0, 1)
 z1 <- rnorm(N, 0, 1)
 z2 <- rnorm(N, 0, 1)
 
+# definimos los valores de los parámetros reales
 b0 <- 4
 b1 <- 2
 b2 <- -1
@@ -72,15 +75,17 @@ for(i in 1:N){
 dagar_data <- list(N = N, y = y, z1 = z1, z2 = z2, M = M)
 
 fit_dagar_grid <- stan(file = 'Codigos/Dagar/Implementacion/random_normal_dagar.stan', 
-                       data = dagar_data, chains = 3,
-                       iter = 20000, 
+                       data = dagar_data, chains = 3, # tres cadenas
+                       iter = 20000, # 20000 iteraciones
                        pars = c("beta0", "beta1", "beta2", "sigma2_e", "sigma2_u",
-                                "rho", "prob"),
-                       cores = 4)
+                                "rho", "prob"), # seleccionamos los parámetros
+                       cores = 4) # utilizamos 4 nucleos
 
-hola <- rstan::extract(fit_dagar_grid,  permuted = FALSE)
+# extraemos las cadenas
+cadenas <- rstan::extract(fit_dagar_grid,  permuted = FALSE)
 
-hola[,1,1]
+# vemos una cadena en particular
+cadenas[,1,1]
 
 # guardamos los resultados del summary
 (resumen <- fit_dagar_grid |> summary())
