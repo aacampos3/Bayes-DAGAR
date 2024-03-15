@@ -134,7 +134,7 @@ matriz_beta2 <- matrix(ncol = 10, nrow = filas)
 matriz_te <- matrix(ncol = 10, nrow = filas)
 matriz_tu <- matrix(ncol = 10, nrow = filas)
 matriz_rho <- matrix(ncol = 10, nrow = filas)
-matriz_covergencia <- matrix(ncol = 10, nrow = 8)
+matriz_covergencia <- matrix(ncol = 10, nrow = 7)
 
 rownames(matriz_covergencia) <- c("b0", "b1", "b2", "sigma_e", "tu", "rho", 
                                   "sigma2_e")
@@ -154,6 +154,8 @@ u <- mvtnorm::rmvnorm(1, mean = rep(0, n), sigma = solve(S))
 for(i in 1:10){
   # obtenemos la realizaciones de u
   # simulamos y
+  cat("Iteración:",i, "\r")
+  
   y1 <- rnorm(n = n,
               mean = beta_0 + beta_1 * z1 + beta_2 * z2 + u,
               sd = sigma_e)
@@ -176,10 +178,10 @@ for(i in 1:10){
               pars = c("b0", "b1", "b2", "sigma_e", "sigma_u", "rho"))
   
   # resumen del modelo
-  a <- summary(mod)
+  aux <- summary(mod)
   
   # guardamos la convergencia
-  convergencia <- a$summary[,10]
+  (convergencia <- aux$summary[,10])
   
   # extraemos las cadenas del modelo
   cadena <- rstan::extract(mod)
@@ -194,3 +196,12 @@ for(i in 1:10){
   matriz_covergencia[,i] <- convergencia
 }
 
+# veamos los resultados
+# muestra las medias a posteriori de las 10 iteraciones
+matriz_beta0 |> apply(2, mean)
+matriz_beta1 |> apply(2, mean)
+matriz_beta2 |> apply(2, mean)
+matriz_sigmae |> apply(2, mean)
+matriz_sigmau |> apply(2, mean)
+matriz_rho |> apply(2, mean)
+matriz_covergencia # muestra la convergencia por iteracion y parametro

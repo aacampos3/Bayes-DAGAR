@@ -252,35 +252,3 @@ fit_dagar_grid <- stan(file = 'Codigos/Dagar/Implementacion/random_normal_dagar.
 (resumen <- fit_dagar_grid |> summary())
 
 traceplot(fit_dagar_grid)
-
-pairs()
-
-
-
-# EXTRA -------------------------------------------------------------------
-
-## Experimento reoder ------------------------------------------------------
-
-# Matriz original (ejemplo)
-(A <- matrix(c(1, 0, 0, 1, 1, 0, 1, 1, 1), nrow = 3, byrow = TRUE))
-
-(A <- matrix(c(0,0,1,0,
-               1,0,1,0,
-               0,0,0,1,
-               0,0,0,0), 
-             ncol = 4, byrow = TRUE))
-
-# Encontrar un orden topológico
-graph <- graph_from_adjacency_matrix(A, mode = "directed", diag = FALSE)
-order <- topo_sort(graph)
-
-?topo_sort
-
-# Reordenar las filas y columnas
-A_reordenada <- A[order, order]
-
-(A_order <- t(A_reordenada))
-
-# Imprimir la matriz reordenada (triangular inferior)
-print(A_order)
-
