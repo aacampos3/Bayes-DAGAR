@@ -10,7 +10,7 @@ choose_seed <- function(n, p, N){
     
     grafo <- sample_gnp(n = n, p = p, directed = TRUE, loops = FALSE) #n=nodes, p=probability of an edge between two nodes
     
-    if(is.dag(grafo)){
+    if(is_dag(grafo)){
       interruptor <- FALSE
     }
     i <- i +1

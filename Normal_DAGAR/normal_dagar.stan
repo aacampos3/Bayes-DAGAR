@@ -5,9 +5,9 @@ data {
   int <lower=1, upper=N-1> nei[N_edges]; // Vector apilando los vecinos dirigidos de cada nodo
   int<lower=0, upper=N_edges> adjacency_ends[N]; //Donde la adyacencia de cada nodo termina en el vector nei
 
-  real y[N]; # datos 
-  real z1[N]; # covariable
-  real z2[N]; # covariable
+  real y[N]; // datos 
+  real z1[N]; // covariable
+  real z2[N]; // covariable
 }
 
 parameters {
@@ -39,7 +39,7 @@ model {
 
   std_dev = sqrt(sigma2_u) * sqrt(vec_var);
   
-  # verosimilitud
+  // verosimilitud
   for(i in 1:N){
     w[i] ~ normal(t_rowsum[i], std_dev[i]);
     y[i] ~ normal(beta0 + beta1 * z1[i] + beta2 * z2[i] + w[i], sqrt(sigma2_e));

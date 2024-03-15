@@ -14,7 +14,7 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
 # importamos funciones utiles
-source("Codigos/Dagar/Implementacion/funciones_dagar.R")
+source("funciones_dagar.R")
 
 # elegimos una semilla tal que se compruebe que la matriz sea DAG
 (semilla <- choose_seed(n = 60, p = 0.034, N = 100000))
@@ -28,7 +28,7 @@ set.seed(semilla)
 grafo <- sample_gnp(n=60, p=0.034, directed = TRUE, loops = FALSE)
 
 # comprobamos si es dag
-is.dag(grafo)
+is_dag(grafo)
 
 # podemos visualizar el grafo anterior
 plot(grafo, edge.arrow.size=0.01,vertex.size = 0.5, xlab = "Erdos-Renyi Model")
@@ -99,7 +99,7 @@ for(i in 1:50){
                      adjacency_ends = adj.ends, y = y, N_nei = N_nei, z1 = z1, 
                      z2 = z2, M = M)
   
-  fit_dagar <- stan(file = 'Codigos/Dagar/Implementacion/normal_dagar.stan', 
+  fit_dagar <- stan(file = 'Normal_DAGAR/normal_dagar.stan', 
                     data = dagar_data, chains = 3, # tres cadenas
                     iter = 14000, # 14000 iteraciones
                     thin = 5, # thinin de 5
