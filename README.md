@@ -29,7 +29,11 @@ El repositorio contiene las siguiente ruta:
 
 ## Referencias 📚
 
+Peaper de referencia para el estudio
+
 * Datta, A., Banerjee, S., Hodges, J. S., & Gao, L. (2019). Spatial disease mapping using directed acyclic graph auto-regressive (DAGAR) models. *Bayesian analysis*, 14(4), 1221.
+
+Código adaptado desde
 
 * Datta, A. (s/f). *advanced-spatial-statistics-2021*. Github. Recuperado el 15 de marzo de 2024, de https://github.com/abhirupdatta/advanced-spatial-statistics-2021
 
