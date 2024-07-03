@@ -68,3 +68,20 @@ adj_index <- function(Minc){
   list(N_nei = rowSums(Minc.low),
        adj_index = cumsum(rowSums(Minc.low)))
 }
+
+# 
+
+resumen_resultados <- function(resultado){
+  resumen_iteracion <- list(media = apply(resultado, 2, mean),
+                            mediana = apply(resultado, 2, median),
+                            sd = apply(resultado, 2, sd),
+                            li = apply(resultado, 2, quantile, 0.025),
+                            ls = apply(resultado, 2, quantile, 0.975))
+  
+  resumen_final <- map_vec(resumen_iteracion, mean)
+  
+  resumen_final <- round(resumen_final, 3)
+  
+  return(resumen_final)
+}
+

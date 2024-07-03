@@ -16,15 +16,17 @@ parameters {
   real b0;
   real b1;
   real b2;
-  real<lower = 0> sigma_e;
-  real<lower = 0> sigma_u; //tu corresponde a 1/sigmaˆ2
+  real<lower = 0> sigma2_e;
+  real<lower = 0> sigma2_u;
   real<lower=-1, upper = 1> rho;
   vector[N] u;
 }
 
 transformed parameters {
   real<lower = 0> tu;
-  tu = (1/sigma_u)^2;
+  tu = (1/sigma2_u);
+  real<lower = 0> sigma_e;
+  sigma_e = sqrt(sigma2_e);
 }
 
 model {
@@ -41,8 +43,7 @@ model {
   b0 ~ normal(0, 1000); // priori para b0
   b1 ~ normal(0, 1000); // priori para b1
   b2 ~ normal(0, 1000); // priori para b2
-  sigma_u ~ cauchy(0,25); // priori para phi
-  sigma_e ~ cauchy(0,25); // priori para phi
-  rho ~ uniform(-1,1);
+  sigma2_u ~ inv_gamma(0.01, 0.01);
+  sigma2_e ~ inv_gamma(0.01, 0.01);
+  rho ~ beta(1,1);
 }
-    

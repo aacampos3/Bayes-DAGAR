@@ -137,10 +137,23 @@ summary(fit_dagar)
 resultados_dagar <- list(b0 =  matriz_beta0,
                          b1 =  matriz_beta1,
                          b2 =  matriz_beta2,
-                         sigmae =  matriz_sigmae,
-                         sigmau =  matriz_sigmau,
+                         sigma2_e =  matriz_sigmae,
+                         sigma2_u =  matriz_sigmau,
                          rho = matriz_rho
                          )
+
+df_resultado <- map_df(resultados_dagar, apply, 2, mean)
+parametro <- colnames(df_resultado)
+
+df_resultado <- t(df_resultado) |> 
+  as.data.frame()
+
+colnames(df_resultado) <- c("Media", "sd", "li", "mediana", "lu", "rhat")
+
+df_resultado <- round(df_resultado, 3)
+
+df_resultado <- bind_cols(df_resultado)
+
 
 # guardamos los resultados
 #saveRDS(resultados_dagar, "resultados_dagar9.RDS")

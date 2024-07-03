@@ -76,7 +76,7 @@ beta_1 <- 2
 beta_2 <- -1
 
 # creamos matrices para guardar los resultados
-filas <- 3750
+filas <- 4125
 matriz_beta0 <- matrix(ncol = 10, nrow = filas)
 matriz_beta1 <- matrix(ncol = 10, nrow = filas)
 matriz_beta2 <- matrix(ncol = 10, nrow = filas)
@@ -121,10 +121,10 @@ for(i in 1:10){
   mod <- stan(file = 'Normal_CAR/normal_car.stan',
               data = datos,
               chains = 3, # tres cadenas
-              iter = 8000, # 8000 iteraciones
-              thin = 2, # thining 2
+              iter = 11000, # 11000 iteraciones
+              thin = 4, # thining 4
               # parametros a retornar
-              pars = c("b0", "b1", "b2", "sigma_e", "sigma_u", "rho"))
+              pars = c("b0", "b1", "b2", "sigma2_e", "sigma2_u", "rho"))
   
   # resumen del modelo
   aux <- summary(mod)
@@ -139,8 +139,8 @@ for(i in 1:10){
   matriz_beta0[,i] <- cadena$b0
   matriz_beta1[,i] <- cadena$b1
   matriz_beta2[,i] <- cadena$b2
-  matriz_te[,i] <- median(cadena$sigma_e)
-  matriz_tu[,i] <- median(cadena$sigma_u)
+  matriz_te[,i] <- median(cadena$sigma2_e)
+  matriz_tu[,i] <- median(cadena$sigma2_u)
   matriz_rho[,i] <- cadena$rho
   matriz_covergencia[,i] <- convergencia
 }
@@ -154,3 +154,21 @@ matriz_sigmae |> apply(2, mean)
 matriz_sigmau |> apply(2, mean)
 matriz_rho |> apply(2, mean)
 matriz_covergencia # muestra la convergencia por iteracion y parametro
+
+resultado <- list(b0 = matriz_beta0,
+                  b1 = matriz_beta1,
+                  b2 = matriz_beta2,
+                  sigma_e = matriz_sigmae,
+                  sigma_u = matriz_sigmau,
+                  rho = matriz_rho)
+
+
+# obtenemos un df con el resumen de los resultados
+df_resultado <- map_df(resultado, resumen_resultados)
+
+df_resultado <- df_resultado |> 
+  mutate(parametro = names(resultado)) |> 
+  relocate(parametro, .before = "media")
+
+df_resultado
+
